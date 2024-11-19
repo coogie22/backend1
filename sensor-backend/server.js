@@ -6,7 +6,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 // Firebase 서비스 계정 키 파일 경로
-const serviceAccount = require('./smartfarm-project-7214a-firebase-adminsdk-aimsp-e813aabd22.json');
+const serviceAccount = require('./smartfarm-project-7214a-firebase-adminsdk-aimsp-4b27ec7a55.json');
 
 // Firebase 초기화
 admin.initializeApp({
