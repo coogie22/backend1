@@ -21,13 +21,13 @@ const db = admin.database();
 // Express 설정
 const app = express();
 app.use(cors());
-app.use(express.json()); // JSON 요청 처리
-app.use(express.urlencoded({ extended: true })); // URL-encoded 데이터 처리
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // HTTPS 인증서 파일 경로 설정
 const options = {
-  key: fs.readFileSync('/etc/letsencrypt/live/leejaewon.store/privkey.pem'), // 개인 키
-  cert: fs.readFileSync('/etc/letsencrypt/live/leejaewon.store/fullchain.pem'), // 인증서
+  key: fs.readFileSync('/etc/letsencrypt/live/leejaewon.store/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/leejaewon.store/fullchain.pem'),
 };
 
 // HTTPS 서버 생성
@@ -39,29 +39,20 @@ const wss = new WebSocket.Server({ server });
 // WebSocket 클라이언트 관리
 const clients = new Set();
 
-// WebSocket 이벤트 처리
 wss.on('connection', (ws, req) => {
-  const clientIP = req.socket.remoteAddress; // 클라이언트 IP 확인
+  const clientIP = req.socket.remoteAddress;
   clients.add(ws);
   console.log(`✅ WebSocket 클라이언트 연결 성공: ${clientIP}`);
 
-  // 클라이언트로부터 메시지 수신
   ws.on('message', (message) => {
-    try {
-      console.log(`📩 수신된 메시지 (${clientIP}):`, message);
-      // 메시지 처리 로직 추가 (필요시)
-    } catch (error) {
-      console.error(`❌ 메시지 처리 오류 (${clientIP}):`, error);
-    }
+    console.log(`📩 수신된 메시지 (${clientIP}): ${message}`);
   });
 
-  // 연결 종료 처리
   ws.on('close', () => {
     clients.delete(ws);
     console.log(`🔌 WebSocket 연결 종료: ${clientIP}`);
   });
 
-  // WebSocket 오류 처리
   ws.onerror = (error) => {
     console.error(`⚠️ WebSocket 오류 (${clientIP}):`, error);
   });
@@ -70,13 +61,12 @@ wss.on('connection', (ws, req) => {
 // 더미 데이터 생성 함수
 function generateDummyData() {
   const data = {
-    temperature: parseFloat((Math.random() * 10 + 20).toFixed(2)), // 20~30°C 범위
-    humidity: parseFloat((Math.random() * 20 + 40).toFixed(2)), // 40~60% 범위
-    soilMoisture: parseFloat((Math.random() * 50 + 50).toFixed(2)), // 50~100 범위
+    temperature: parseFloat((Math.random() * 10 + 20).toFixed(2)),
+    humidity: parseFloat((Math.random() * 20 + 40).toFixed(2)),
+    soilMoisture: parseFloat((Math.random() * 50 + 50).toFixed(2)),
     timestamp: Date.now(),
   };
 
-  // Firebase에 저장
   db.ref('sensorData').push(data, (error) => {
     if (error) {
       console.error('❌ Firebase 데이터 저장 오류:', error);
@@ -85,7 +75,6 @@ function generateDummyData() {
     }
   });
 
-  // WebSocket 클라이언트로 데이터 전송
   for (const client of clients) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(data));
@@ -98,13 +87,13 @@ function generateDummyData() {
 // 1초마다 데이터 생성
 setInterval(generateDummyData, 1000);
 
-// 간단한 HTTP GET 요청 처리 (테스트용)
+// HTTP GET 요청 처리 (테스트용)
 app.get('/', (req, res) => {
   res.status(200).send('🌐 HTTPS 및 WebSocket 서버가 실행 중입니다.');
 });
 
 // HTTPS 서버 시작
-const PORT = process.env.PORT || 443; // HTTPS 기본 포트 443
+const PORT = process.env.PORT || 443;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 HTTPS 서버가 https://leejaewon.store:${PORT} 에서 실행 중입니다.`);
 });
