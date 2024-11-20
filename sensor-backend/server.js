@@ -22,7 +22,7 @@ const db = admin.database();
 const app = express();
 app.use(cors());
 
-// HTTPS 인증서 파일 경로 확인
+// HTTPS 인증서 파일 경로
 const options = {
   key: fs.readFileSync('/home/leejaewon6463/key.pem'), // 개인 키
   cert: fs.readFileSync('/home/leejaewon6463/cert.pem'), // 인증서
@@ -38,22 +38,24 @@ const wss = new WebSocket.Server({ server });
 const clients = new Set();
 
 wss.on('connection', (ws, req) => {
-  // 연결된 클라이언트 관리
+  const clientIP = req.socket.remoteAddress; // 클라이언트 IP 확인
   clients.add(ws);
-  const clientIP = req.socket.remoteAddress;
   console.log(`WebSocket 클라이언트 연결 성공: ${clientIP}`);
 
+  // 메시지 수신
   ws.on('message', (message) => {
-    console.log('수신된 메시지:', message);
+    console.log(`수신된 메시지 (${clientIP}):`, message);
   });
 
+  // 연결 종료
   ws.on('close', () => {
     clients.delete(ws);
-    console.log(`WebSocket 클라이언트 연결 종료: ${clientIP}`);
+    console.log(`WebSocket 연결 종료: ${clientIP}`);
   });
 
+  // WebSocket 오류 처리
   ws.onerror = (error) => {
-    console.error('WebSocket 오류:', error);
+    console.error(`WebSocket 오류 (${clientIP}):`, error);
   };
 });
 
@@ -69,7 +71,7 @@ function generateDummyData() {
   // Firebase에 저장
   db.ref('sensorData').push(data);
 
-  // WebSocket으로 클라이언트에게 데이터 전송
+  // WebSocket 클라이언트에게 데이터 전송
   for (const client of clients) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(data));
