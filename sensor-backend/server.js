@@ -1,6 +1,7 @@
+const fs = require('fs');
+const https = require('https');
+const WebSocket = require('ws');
 const express = require('express');
-const http = require('http'); // HTTP 서버
-const WebSocket = require('ws'); // WebSocket 라이브러리
 const admin = require('firebase-admin');
 const cors = require('cors');
 require('dotenv').config();
@@ -21,8 +22,14 @@ const db = admin.database();
 const app = express();
 app.use(cors());
 
-// HTTP 서버 생성
-const server = http.createServer(app);
+// HTTPS 인증서 파일 경로
+const options = {
+  key: fs.readFileSync('./key.pem'), // 개인 키
+  cert: fs.readFileSync('./cert.pem'), // 인증서
+};
+
+// HTTPS 서버 생성
+const server = https.createServer(options, app);
 
 // WebSocket 서버 설정
 const wss = new WebSocket.Server({ server });
@@ -64,8 +71,8 @@ function generateDummyData() {
 // 1초마다 데이터 생성
 setInterval(generateDummyData, 1000);
 
-// HTTP 서버 시작
+// HTTPS 서버 시작
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
+  console.log(`HTTPS 서버가 https://localhost:${PORT} 에서 실행 중입니다.`);
 });
