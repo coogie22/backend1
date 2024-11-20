@@ -22,7 +22,7 @@ const db = admin.database();
 const app = express();
 app.use(cors());
 
-// HTTPS 인증서 파일 경로
+// HTTPS 인증서 파일 경로 확인
 const options = {
   key: fs.readFileSync('./key.pem'), // 개인 키
   cert: fs.readFileSync('./cert.pem'), // 인증서
@@ -38,12 +38,20 @@ const wss = new WebSocket.Server({ server });
 const clients = new Set();
 wss.on('connection', (ws) => {
   clients.add(ws);
-  console.log('WebSocket 클라이언트 연결');
+  console.log('WebSocket 클라이언트 연결 성공');
+
+  ws.on('message', (message) => {
+    console.log('수신된 메시지:', message);
+  });
 
   ws.on('close', () => {
     clients.delete(ws);
     console.log('WebSocket 클라이언트 연결 종료');
   });
+
+  ws.onerror = (error) => {
+    console.error('WebSocket 오류:', error);
+  };
 });
 
 // 더미 데이터 생성 함수
@@ -74,5 +82,5 @@ setInterval(generateDummyData, 1000);
 // HTTPS 서버 시작
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`HTTPS 서버가 https://localhost:${PORT} 에서 실행 중입니다.`);
+  console.log(`HTTPS 서버가 https://[서버 IP 또는 도메인]:${PORT} 에서 실행 중입니다.`);
 });
