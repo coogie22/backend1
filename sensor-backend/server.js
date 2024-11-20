@@ -24,10 +24,9 @@ app.use(cors());
 
 // HTTPS 인증서 파일 경로 확인
 const options = {
-  key: fs.readFileSync('/home/leejaewon6463/key.pem'),
-  cert: fs.readFileSync('/home/leejaewon6463/cert.pem'),
+  key: fs.readFileSync('/home/leejaewon6463/key.pem'), // 개인 키
+  cert: fs.readFileSync('/home/leejaewon6463/cert.pem'), // 인증서
 };
-
 
 // HTTPS 서버 생성
 const server = https.createServer(options, app);
@@ -37,9 +36,12 @@ const wss = new WebSocket.Server({ server });
 
 // WebSocket 클라이언트 관리
 const clients = new Set();
-wss.on('connection', (ws) => {
+
+wss.on('connection', (ws, req) => {
+  // 연결된 클라이언트 관리
   clients.add(ws);
-  console.log('WebSocket 클라이언트 연결 성공');
+  const clientIP = req.socket.remoteAddress;
+  console.log(`WebSocket 클라이언트 연결 성공: ${clientIP}`);
 
   ws.on('message', (message) => {
     console.log('수신된 메시지:', message);
@@ -47,7 +49,7 @@ wss.on('connection', (ws) => {
 
   ws.on('close', () => {
     clients.delete(ws);
-    console.log('WebSocket 클라이언트 연결 종료');
+    console.log(`WebSocket 클라이언트 연결 종료: ${clientIP}`);
   });
 
   ws.onerror = (error) => {
@@ -82,6 +84,6 @@ setInterval(generateDummyData, 1000);
 
 // HTTPS 서버 시작
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`HTTPS 서버가 https://[서버 IP 또는 도메인]:${PORT} 에서 실행 중입니다.`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`HTTPS 서버가 https://0.0.0.0:${PORT} 에서 실행 중입니다.`);
 });
