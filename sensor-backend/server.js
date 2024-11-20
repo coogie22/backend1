@@ -24,9 +24,10 @@ app.use(cors());
 
 // HTTPS 인증서 파일 경로 확인
 const options = {
-  key: fs.readFileSync('./key.pem'), // 개인 키
-  cert: fs.readFileSync('./cert.pem'), // 인증서
+  key: fs.readFileSync('/home/leejaewon6463/key.pem'),
+  cert: fs.readFileSync('/home/leejaewon6463/cert.pem'),
 };
+
 
 // HTTPS 서버 생성
 const server = https.createServer(options, app);
