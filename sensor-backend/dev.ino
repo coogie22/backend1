@@ -11,13 +11,6 @@ const int sensorPin = 34; // 센서가 연결된 GPIO 핀
 
 bool isServerRunning = true; // 서버가 실행 중인지 확인하는 변수
 
-// 필터링을 위한 변수 설정
-const int numReadings = 10; // 이동 평균을 위한 샘플 수
-int readings[numReadings];  // 센서 값 저장 배열
-int readIndex = 0;          // 배열 인덱스
-int total = 0;              // 값의 총합
-int average = 0;            // 평균값
-
 void setup() {
   Serial.begin(9600);  // 시리얼 모니터 초기화
 
@@ -31,11 +24,6 @@ void setup() {
   Serial.println("\nWi-Fi connected!");
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
-
-  // 센서 초기화: 이동 평균 배열 초기화
-  for (int i = 0; i < numReadings; i++) {
-    readings[i] = 0;
-  }
 }
 
 void loop() {
@@ -56,22 +44,12 @@ void loop() {
     if (WiFi.status() == WL_CONNECTED) { // Wi-Fi 연결 확인
       int sensorValue = analogRead(sensorPin); // 센서 값 읽기
 
-      // 이동 평균 계산
-      total -= readings[readIndex];
-      readings[readIndex] = sensorValue;
-      total += readings[readIndex];
-      readIndex = (readIndex + 1) % numReadings;
-      average = total / numReadings;
-
       // 습도 계산: 값이 낮을수록 습함 (센서 값이 0일 때 100%, 4095일 때 0%)
-      // 값에 여유를 주기 위한 보정 식 추가
-      float humidity = map(average, 0, 4095, 100, 0); // 0~4095 범위에서 100~0%로 매핑
+      float humidity = map(sensorValue, 0, 4095, 100, 0); // 0~4095 범위에서 100~0%로 매핑
 
       // 디버깅용 출력
       Serial.print("Raw Sensor Value: ");
       Serial.println(sensorValue);
-      Serial.print("Filtered Sensor Value: ");
-      Serial.println(average);
       Serial.print("Calculated Humidity: ");
       Serial.print(humidity);
       Serial.println(" %");
@@ -106,7 +84,7 @@ void loop() {
       Serial.println("Wi-Fi Disconnected");
     }
 
-    delay(1000); // 1초 간격으로 데이터 전송
+    delay(3000); // 3초 간격으로 데이터 전송
   } else {
     // 서버가 중단된 상태에서 1초 대기
     delay(1000);
