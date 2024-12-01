@@ -4,7 +4,7 @@ const firebaseAdmin = require('firebase-admin');
 const path = require('path');
 
 // Firebase Admin SDK 초기화
-const serviceAccount = require(path.join(__dirname, 'backend1-79e56-firebase-adminsdk-yp0ns-c8eda53b34.json')); // JSON 키 파일 경로
+const serviceAccount = require(path.join(__dirname, 'backend1-79e56-firebase-adminsdk-yp0ns-1da7a60b81.json')); // JSON 키 파일 경로
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount),
   databaseURL: "https://backend1-79e56-default-rtdb.firebaseio.com/",  // Firebase Database URL
