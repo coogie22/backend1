@@ -23,28 +23,34 @@ app.get('/', (req, res) => {
 
 // POST 요청 처리
 app.post('/humidity', (req, res) => {
-  const humidity = req.body.humidity;
+  const { soilHumidity, temperature, humidity } = req.body; // JSON 데이터에서 값을 추출
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] Received humidity: ${humidity}%`);
+  
+  console.log(`[${timestamp}] Received data:`);
+  console.log(` - Soil Humidity: ${soilHumidity}%`);
+  console.log(` - Temperature: ${temperature}°C`);
+  console.log(` - Humidity: ${humidity}%`);
 
   // Firebase Realtime Database에 데이터 저장
   const db = firebaseAdmin.database();
-  const humidityRef = db.ref('humidityData'); // humidityData 경로에 데이터를 저장
+  const dataRef = db.ref('sensorData'); // sensorData 경로에 데이터를 저장
 
   // 데이터 객체 생성
   const data = {
+    soilHumidity: soilHumidity,
+    temperature: temperature,
     humidity: humidity,
     timestamp: timestamp
   };
 
   // Firebase에 데이터 저장
-  humidityRef.push(data, (error) => {
+  dataRef.push(data, (error) => {
     if (error) {
       console.error("데이터 저장 실패:", error);
       res.status(500).send("데이터 저장 실패");
     } else {
       console.log("데이터가 Firebase에 저장되었습니다.");
-      res.status(200).send('Humidity data received');
+      res.status(200).send('Sensor data received and saved');
     }
   });
 });

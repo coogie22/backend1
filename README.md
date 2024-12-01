@@ -55,10 +55,6 @@ INSTALL WITHOUT DEPENDENCIES
 모두 설치
 
 
-초록색 D34 , 파란색 GND
-
-
-
 
 현재 포트를 사용 중인 프로세스 찾기
 먼저 5000번 포트를 사용 중인 프로세스를 찾아야 합니다. 아래 명령어를 사용하여 이를 확인할 수 있습니다.
@@ -86,3 +82,15 @@ COMMAND  PID          USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
 node    1761 leejaewon6463   19u  IPv4  23854      0t0  TCP *:5000 (LISTEN)
 leejaewon6463@instance-20241120-212215:~$ kill -9 1761
 
+
+
+3.3V = VCC , + 
+
+GND = 
+
+
+토양 습도 센서 = VCC , GND , D34
+
+온습도 센서 = +(VCC) , out(D13) , -(GND)
+ 
+물펌프 센서(릴레이 모듈) = -(GND)  , +(3.3V) , S(D4)
