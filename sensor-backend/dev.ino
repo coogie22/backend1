@@ -3,10 +3,10 @@
 #include <DHT.h> // 온습도 센서를 위한 라이브러리
 
 // Wi-Fi 정보
-const char* ssid = "KT_GiGA_C2A6";       // Wi-Fi 이름
-const char* password = "fd58ff8549";     // Wi-Fi 비밀번호
+const char* ssid = "";       // Wi-Fi 이름
+const char* password = "";     // Wi-Fi 비밀번호
 
-const char* serverName = "http://34.64.239.234:5000/humidity"; // Node.js 서버 주소
+const char* serverName = ""; // Node.js 서버 주소
 
 // 센서 핀 설정
 const int soilSensorPin = 34;  // 토양 습도 센서 핀
